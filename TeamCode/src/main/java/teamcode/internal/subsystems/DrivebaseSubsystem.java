@@ -14,10 +14,10 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.teamcode.internal.util.EncoderConstants;
-import org.firstinspires.ftc.teamcode.internal.util.functionality.driving.MecanumDrivebase;
 
 import java.util.Arrays;
+
+import teamcode.internal.util.EncoderConstants;
 
 /**
  * Represents a drivebase that handles all movement functions of a robot.
@@ -33,9 +33,6 @@ public class DrivebaseSubsystem extends CustomSubsystemBase {
 
     /** An array of the drivebase motors on the robot */
     private final DcMotor[] motors;
-
-    /** A Mecanum drive-base which handles movement of the robot */
-    private final MecanumDrivebase drivebase = null;
 
     /** Speeds in which the robot strafes and drives */
     private final double AUTO_STRAFE_SPEED = 0.5;
@@ -188,10 +185,10 @@ public class DrivebaseSubsystem extends CustomSubsystemBase {
         double error = degree;
 
         while (Math.abs(error) > 2.0) {
-            drivebase.drive(0,0, error > 0 ? TURN_SPEED : -TURN_SPEED);
+            drive(0,0, error > 0 ? TURN_SPEED : -TURN_SPEED);
             error = degree - getAngle();
         }
-        drivebase.drive(0, 0, 0);
+        drive(0, 0, 0);
     }
 
     public void turnTo(double heading) {

@@ -1,13 +1,12 @@
-package org.firstinspires.ftc.teamcode.internal.subsystems;
+package teamcode.internal.subsystems;
 
-import com.arcrobotics.ftclib.command.SubsystemBase;
-import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.internal.util.EncoderConstants;
+
+import teamcode.internal.util.EncoderConstants;
 
 /**
  * Represents a virtual 4 bar which handles lifting the claw.

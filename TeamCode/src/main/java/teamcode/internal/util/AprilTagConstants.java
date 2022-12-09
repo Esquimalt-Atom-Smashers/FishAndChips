@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.internal.util;
+package teamcode.internal.util;
 
 import java.util.Arrays;
 import java.util.HashSet;

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.internal.util;
+package teamcode.internal.util;
 
 /**
  * Class which holds all encoder constants for all the motors we use

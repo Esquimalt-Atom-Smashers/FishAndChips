@@ -3,12 +3,11 @@ package teamcode.internal;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
-import org.firstinspires.ftc.teamcode.internal.subsystems.ClawSubsystem;
-import org.firstinspires.ftc.teamcode.internal.subsystems.LightSubsystem;
-import org.firstinspires.ftc.teamcode.internal.subsystems.LinkageSubsystem;
-import org.firstinspires.ftc.teamcode.internal.subsystems.WebcamSubsystem;
-
+import teamcode.internal.subsystems.ClawSubsystem;
 import teamcode.internal.subsystems.DrivebaseSubsystem;
+import teamcode.internal.subsystems.LightSubsystem;
+import teamcode.internal.subsystems.LinkageSubsystem;
+import teamcode.internal.subsystems.WebcamSubsystem;
 
 /**
  * The actual robot represented via a class.
@@ -95,7 +94,7 @@ public class Robot {
             }).run();
         }
 
-        drivebaseSubsystem.drive(0, 0, 0);
+        drivebaseSubsystem.drive(-controller1.left_stick_y, controller1.left_stick_x, controller1.right_stick_x);
     }
 
     /** Initializes the webcam subsystem */

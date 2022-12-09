@@ -1,17 +1,17 @@
-package org.firstinspires.ftc.teamcode.internal.auto.modes.red;
+package teamcode.internal.auto.modes.red;
 
-import com.arcrobotics.ftclib.command.FunctionalCommand;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.internal.Robot;
-import org.firstinspires.ftc.teamcode.internal.subsystems.DrivebaseSubsystem;
-import org.firstinspires.ftc.teamcode.internal.util.AprilTagConstants;
+
 import org.openftc.apriltag.AprilTagDetection;
 
 import java.util.ArrayList;
-import java.util.Collections;
+
+import teamcode.internal.Robot;
+import teamcode.internal.subsystems.DrivebaseSubsystem;
+import teamcode.internal.util.AprilTagConstants;
 
 @Autonomous(name="Auto: Red Alliance Right")
 public class AdvancedAutonomousRightRed extends LinearOpMode {

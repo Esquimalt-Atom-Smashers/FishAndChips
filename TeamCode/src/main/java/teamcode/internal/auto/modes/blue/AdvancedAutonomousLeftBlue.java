@@ -1,15 +1,17 @@
-package org.firstinspires.ftc.teamcode.internal.auto.modes.blue;
+package teamcode.internal.auto.modes.blue;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.internal.Robot;
-import org.firstinspires.ftc.teamcode.internal.subsystems.DrivebaseSubsystem;
-import org.firstinspires.ftc.teamcode.internal.util.AprilTagConstants;
+
 import org.openftc.apriltag.AprilTagDetection;
 
 import java.util.ArrayList;
+
+import teamcode.internal.Robot;
+import teamcode.internal.subsystems.DrivebaseSubsystem;
+import teamcode.internal.util.AprilTagConstants;
 
 @Autonomous(name="Auto: Blue Alliance Left")
 public class AdvancedAutonomousLeftBlue extends LinearOpMode {
@@ -65,36 +67,39 @@ public class AdvancedAutonomousLeftBlue extends LinearOpMode {
 
     private void driveToPlaceCone() {
         robot.getDrivebaseSubsystem().strafe(DrivebaseSubsystem.DistanceUnits.INCHES, 27);
+        wait(500);
 
         robot.getDrivebaseSubsystem().drive(DrivebaseSubsystem.DistanceUnits.INCHES, 28);
+        wait(500);
 
         robot.getDrivebaseSubsystem().strafe(DrivebaseSubsystem.DistanceUnits.INCHES, -14);
+        wait(500);
 
         robot.getClawSubsystem().openClaw();
     }
 
     private void deploy() {
-        robot.getClawSubsystem().openClaw();
-        robot.getClawSubsystem().closeClaw();
-        robot.getClawSubsystem().closeClaw();
-
-        wait(2000);
         robot.getLinkageSubsystem().nextPos();
         robot.getLinkageSubsystem().nextPos();
+        wait(500);
     }
 
     private void driveToParking() {
         switch (parkingZone) {
             case 1:
                 robot.getDrivebaseSubsystem().strafe(DrivebaseSubsystem.DistanceUnits.INCHES, 16);
+                wait(500);
                 robot.getDrivebaseSubsystem().drive(DrivebaseSubsystem.DistanceUnits.INCHES, -26);
+                wait(500);
                 robot.getDrivebaseSubsystem().strafe(DrivebaseSubsystem.DistanceUnits.INCHES, -28 * 2);
+                wait(500);
                 robot.getDrivebaseSubsystem().drive(DrivebaseSubsystem.DistanceUnits.INCHES, 27);
                 break;
             case 2:
                 break;
             case 3:
                 robot.getDrivebaseSubsystem().strafe(DrivebaseSubsystem.DistanceUnits.INCHES, 28);
+                wait(500);
                 robot.getDrivebaseSubsystem().drive(DrivebaseSubsystem.DistanceUnits.INCHES, 28);
                 break;
         }

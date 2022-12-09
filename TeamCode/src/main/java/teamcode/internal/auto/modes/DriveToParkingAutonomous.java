@@ -1,15 +1,16 @@
-package org.firstinspires.ftc.teamcode.internal.auto.modes;
+package teamcode.internal.auto.modes;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.internal.Robot;
-import org.firstinspires.ftc.teamcode.internal.subsystems.DrivebaseSubsystem;
-import org.firstinspires.ftc.teamcode.internal.util.AprilTagConstants;
 import org.openftc.apriltag.AprilTagDetection;
 
 import java.util.ArrayList;
+
+import teamcode.internal.Robot;
+import teamcode.internal.subsystems.DrivebaseSubsystem;
+import teamcode.internal.util.AprilTagConstants;
 
 @Autonomous
 public class DriveToParkingAutonomous extends LinearOpMode {

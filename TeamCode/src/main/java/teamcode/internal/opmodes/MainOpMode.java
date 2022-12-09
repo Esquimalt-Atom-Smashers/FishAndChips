@@ -1,20 +1,24 @@
-package org.firstinspires.ftc.teamcode.internal.opmodes;
+package teamcode.internal.opmodes;
 
-import com.arcrobotics.ftclib.command.CommandOpMode;
-import com.qualcomm.hardware.bosch.BNO055IMU;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 
-import org.firstinspires.ftc.teamcode.internal.Robot;
+import teamcode.internal.Robot;
 
 @SuppressWarnings("unused")
 @TeleOp(name="Main Opmode", group="Linear Opmode")
-public class MainOpMode extends CommandOpMode {
+public class MainOpMode extends LinearOpMode {
     private Robot robot;
 
     @Override
-    public void initialize() {
-        Robot m_robot = new Robot(this);
+    public void runOpMode() throws InterruptedException {
+        robot = new Robot(this);
+
+        waitForStart();
+
+        while (opModeIsActive() && !isStopRequested()) {
+            robot.run();
+        }
     }
 }

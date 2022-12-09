@@ -1,11 +1,9 @@
-package org.firstinspires.ftc.teamcode.internal.opmodes;
+package teamcode.internal.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.teamcode.internal.Robot;
-import org.firstinspires.ftc.teamcode.internal.util.AprilTagConstants;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
@@ -18,6 +16,9 @@ import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
 
 import java.util.ArrayList;
+
+import teamcode.internal.Robot;
+import teamcode.internal.util.AprilTagConstants;
 
 @TeleOp(name="April Tag Detection OpMode")
 public class TestingAprilTagDetectionOpMode extends LinearOpMode {
