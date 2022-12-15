@@ -4,7 +4,6 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-
 import org.openftc.apriltag.AprilTagDetection;
 
 import java.util.ArrayList;
@@ -13,7 +12,7 @@ import teamcode.internal.Robot;
 import teamcode.internal.subsystems.DrivebaseSubsystem;
 import teamcode.internal.util.AprilTagConstants;
 
-@Autonomous(name="Auto: Blue Alliance Left")
+@Autonomous(name="Main Autonomous Mode")
 public class AdvancedAutonomousLeftBlue extends LinearOpMode {
     private Robot robot;
 
@@ -25,10 +24,10 @@ public class AdvancedAutonomousLeftBlue extends LinearOpMode {
         robot = new Robot(this);
 
         robot.initWebcamSubsystem();
-        robot.getWebcamSubsystem().startStreaming();
 
         waitForStart();
         if (opModeIsActive()) {
+            robot.getWebcamSubsystem().startStreaming();
             while (!tagFound && !isStopRequested()) {
                 detectTag();
                 telemetry.addLine("Tag Not Detected");
@@ -60,47 +59,43 @@ public class AdvancedAutonomousLeftBlue extends LinearOpMode {
                     parkingZone = 3;
                     tagFound = true;
                 }
-
             }
         }
     }
 
     private void driveToPlaceCone() {
-        robot.getDrivebaseSubsystem().strafe(DrivebaseSubsystem.DistanceUnits.INCHES, 27);
+        robot.getDrivebaseSubsystem().strafe(DrivebaseSubsystem.DistanceUnits.INCHES, 28);
         wait(500);
 
-        robot.getDrivebaseSubsystem().drive(DrivebaseSubsystem.DistanceUnits.INCHES, 28);
+        robot.getDrivebaseSubsystem().drive(DrivebaseSubsystem.DistanceUnits.INCHES, 26);
         wait(500);
 
-        robot.getDrivebaseSubsystem().strafe(DrivebaseSubsystem.DistanceUnits.INCHES, -14);
+        robot.getDrivebaseSubsystem().strafe(DrivebaseSubsystem.DistanceUnits.INCHES, -13);
         wait(500);
 
         robot.getClawSubsystem().openClaw();
     }
 
     private void deploy() {
-        robot.getLinkageSubsystem().nextPos();
+        robot.getClawSubsystem().openClaw();
+        robot.getClawSubsystem().closeClaw();
+        wait(1000);
         robot.getLinkageSubsystem().nextPos();
         wait(500);
+        robot.getLinkageSubsystem().nextPos();
+        wait(1000);
     }
 
     private void driveToParking() {
         switch (parkingZone) {
             case 1:
-                robot.getDrivebaseSubsystem().strafe(DrivebaseSubsystem.DistanceUnits.INCHES, 16);
-                wait(500);
-                robot.getDrivebaseSubsystem().drive(DrivebaseSubsystem.DistanceUnits.INCHES, -26);
-                wait(500);
-                robot.getDrivebaseSubsystem().strafe(DrivebaseSubsystem.DistanceUnits.INCHES, -28 * 2);
-                wait(500);
-                robot.getDrivebaseSubsystem().drive(DrivebaseSubsystem.DistanceUnits.INCHES, 27);
+                robot.getDrivebaseSubsystem().strafe(DrivebaseSubsystem.DistanceUnits.INCHES, -42);
                 break;
             case 2:
+                robot.getDrivebaseSubsystem().strafe(DrivebaseSubsystem.DistanceUnits.INCHES, -14);
                 break;
             case 3:
-                robot.getDrivebaseSubsystem().strafe(DrivebaseSubsystem.DistanceUnits.INCHES, 28);
-                wait(500);
-                robot.getDrivebaseSubsystem().drive(DrivebaseSubsystem.DistanceUnits.INCHES, 28);
+                robot.getDrivebaseSubsystem().strafe(DrivebaseSubsystem.DistanceUnits.INCHES, 14);
                 break;
         }
     }

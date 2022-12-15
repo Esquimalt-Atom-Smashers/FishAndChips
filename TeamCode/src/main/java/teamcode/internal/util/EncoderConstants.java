@@ -16,6 +16,7 @@ public class EncoderConstants {
 
         public static final double PULSES_PER_CENTIMETRE =
                 (PULSES_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_CM * Math.PI);
+
         public static final double PULSES_PER_INCH =
                 (PULSES_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * Math.PI);
         public static final double PULSES_PER_TILE = (PULSES_PER_INCH * 24);

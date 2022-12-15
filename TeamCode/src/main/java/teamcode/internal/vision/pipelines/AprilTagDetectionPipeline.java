@@ -60,8 +60,8 @@ public class AprilTagDetectionPipeline extends OpenCvPipeline {
         cameraMatrix.put(0,2, cx);
 
         cameraMatrix.put(1,0,0);
-        cameraMatrix.put(1,1,fy);
-        cameraMatrix.put(1,2,cy);
+        cameraMatrix.put(1,1, fy);
+        cameraMatrix.put(1,2, cy);
 
         cameraMatrix.put(2, 0, 0);
         cameraMatrix.put(2,1,0);

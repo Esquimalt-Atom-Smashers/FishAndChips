@@ -16,9 +16,11 @@ public class MainOpMode extends LinearOpMode {
         robot = new Robot(this);
 
         waitForStart();
-
         while (opModeIsActive() && !isStopRequested()) {
             robot.run();
+            robot.getDrivebaseSubsystem().drive(-gamepad1.left_stick_y,
+                    gamepad1.left_stick_x,
+                    gamepad1.right_stick_x);
         }
     }
 }

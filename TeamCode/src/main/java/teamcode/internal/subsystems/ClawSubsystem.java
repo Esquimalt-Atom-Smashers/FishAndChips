@@ -1,7 +1,8 @@
 package teamcode.internal.subsystems;
 
+import com.arcrobotics.ftclib.hardware.ServoEx;
+import com.arcrobotics.ftclib.hardware.SimpleServo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -11,7 +12,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
  */
 public class ClawSubsystem extends CustomSubsystemBase {
     /** The servo which controls the claw */
-    private final Servo claw;
+    private final ServoEx claw;
 
     /**
      * Initializes the claw servo and sets it to the proper configuration.
@@ -21,14 +22,14 @@ public class ClawSubsystem extends CustomSubsystemBase {
      */
     public ClawSubsystem(HardwareMap hardwareMap, Telemetry telemetry) {
         super(hardwareMap, telemetry);
-        claw = hardwareMap.get(Servo.class, "clawServo");
+        claw = new SimpleServo(hardwareMap, "clawServo", 0, 270, AngleUnit.DEGREES);
     }
 
     public void openClaw() {
-        claw.setPosition(0);
+        claw.turnToAngle(50);
     }
 
     public void closeClaw() {
-        claw.setPosition(1);
+        claw.turnToAngle(90);
     }
 }

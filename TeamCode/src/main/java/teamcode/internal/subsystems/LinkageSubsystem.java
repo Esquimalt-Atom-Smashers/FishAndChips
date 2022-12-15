@@ -36,7 +36,7 @@ public class LinkageSubsystem extends CustomSubsystemBase {
     public enum Position {
         HOME(0),
         SMALL_POLE(55),
-        MEDIUM_POLE(95),
+        MEDIUM_POLE(90),
         TALL_POLE(110);
 
         private int deg;
@@ -137,6 +137,9 @@ public class LinkageSubsystem extends CustomSubsystemBase {
     /**
      * @return the current position of the linkage
      */
+    public int getLinkage() {
+        return linkage.getCurrentPosition();
+    }
     public Position getCurrentPosition() {
         return currentPosition;
     }

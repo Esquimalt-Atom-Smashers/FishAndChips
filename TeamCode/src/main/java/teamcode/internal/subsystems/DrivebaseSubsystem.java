@@ -35,8 +35,8 @@ public class DrivebaseSubsystem extends CustomSubsystemBase {
     private final DcMotor[] motors;
 
     /** Speeds in which the robot strafes and drives */
-    private final double AUTO_STRAFE_SPEED = 0.5;
-    private final double AUTO_DRIVE_SPEED = 0.6;
+    private final double AUTO_STRAFE_SPEED = 0.3;
+    private final double AUTO_DRIVE_SPEED = 0.3;
     private final double TURN_SPEED = 0.4;
 
     /** Enum used for driving in different units of length */

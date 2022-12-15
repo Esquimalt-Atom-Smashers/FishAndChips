@@ -3,15 +3,17 @@ package teamcode.internal;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
+import java.util.ArrayList;
+
 import teamcode.internal.subsystems.ClawSubsystem;
 import teamcode.internal.subsystems.DrivebaseSubsystem;
 import teamcode.internal.subsystems.LightSubsystem;
 import teamcode.internal.subsystems.LinkageSubsystem;
 import teamcode.internal.subsystems.WebcamSubsystem;
+import teamcode.internal.util.EncoderConstants;
 
 /**
  * The actual robot represented via a class.
- * This class extends ftclib.command.Robot which allows the class to be connected to the CommandScheduler.
  * All gamepad key-binds are set here and subsystems are initialized.
  */
 @SuppressWarnings("unused")
@@ -20,16 +22,16 @@ public class Robot {
     private final OpMode opMode;
 
     /** Controllers declared here */
-    private Gamepad controller1 = null;
+    private Gamepad controller1;
 
     /** Subsystems declared here */
     private DrivebaseSubsystem drivebaseSubsystem;
     private LinkageSubsystem linkageSubsystem;
     private ClawSubsystem clawSubsystem;
     private WebcamSubsystem webcamSubsystem;
-    private LightSubsystem lightSubsystem = null; //null until the lights are put back on the robot
+    private LightSubsystem lightSubsystem; //null until the lights are put back on the robot
 
-    private volatile boolean clawClosed = false;
+    private boolean clawClosed = false;
 
     /**
      * Initializes all subsystems and joysticks.
@@ -39,12 +41,7 @@ public class Robot {
     public Robot(OpMode opMode) {
         this.opMode = opMode;
         initSubsystems();
-        initJoysticks();
-    }
-
-    /** Initializes the joysticks */
-    private void initJoysticks() {
-
+        controller1 = opMode.gamepad1;
     }
 
     /** Initializes the subsystems (excluding the webcam subsystem) */
@@ -52,32 +49,38 @@ public class Robot {
         drivebaseSubsystem = new DrivebaseSubsystem(opMode.hardwareMap, opMode.telemetry);
         linkageSubsystem = new LinkageSubsystem(opMode.hardwareMap, opMode.telemetry);
         clawSubsystem = new ClawSubsystem(opMode.hardwareMap, opMode.telemetry);
-
+        lightSubsystem = new LightSubsystem(opMode.hardwareMap, opMode.telemetry);
     }
 
     public void run() {
-        if (controller1.right_bumper) {
-            drivebaseSubsystem.drive(-controller1.left_stick_y,
-                                      controller1.left_stick_x,
-                                      controller1.right_stick_x);
-            if (clawClosed) {
-                ((Runnable) () -> {
-                    clawSubsystem.openClaw();
-                    clawClosed = !clawClosed;
-                }).run();
-            }
-            else {
-                ((Runnable) () -> {
-                    clawSubsystem.closeClaw();
-                    clawClosed = !clawClosed;
-                }).run();
-            }
+        drivebaseSubsystem.drive(-controller1.left_stick_y,
+                controller1.left_stick_x, controller1.right_stick_x);
+
+        if (controller1.dpad_left) {
+            ((Runnable) () -> {
+                lightSubsystem.on(LightSubsystem.LightType.UNDER_GLOW);
+                lightSubsystem.on(LightSubsystem.LightType.ARM_GLOW);
+            }).run();
+        }
+        if (controller1.dpad_right) {
+            ((Runnable) () -> {
+                lightSubsystem.off(LightSubsystem.LightType.UNDER_GLOW);
+                lightSubsystem.off(LightSubsystem.LightType.ARM_GLOW);
+            }).run();
         }
 
-        if (controller1.a) {
-            linkageSubsystem.lift();
+        if (controller1.left_bumper) {
+            ((Runnable) () -> clawSubsystem.closeClaw()).run();
+        }
+
+        if (controller1.right_bumper) {
+            ((Runnable) () -> clawSubsystem.openClaw()).run();
+        }
+
+        if (controller1.a && linkageSubsystem.getLinkage() < 115 * EncoderConstants.Gobilda60RPM.PULSES_PER_DEGREE) {
             ((Runnable) () -> {
-                while (controller1.a) {
+                linkageSubsystem.lift();
+                while (controller1.a && linkageSubsystem.getLinkage() < 115 * EncoderConstants.Gobilda60RPM.PULSES_PER_DEGREE) {
 
                 }
                 linkageSubsystem.stop();
@@ -93,8 +96,6 @@ public class Robot {
                 linkageSubsystem.stop();
             }).run();
         }
-
-        drivebaseSubsystem.drive(-controller1.left_stick_y, controller1.left_stick_x, controller1.right_stick_x);
     }
 
     /** Initializes the webcam subsystem */
