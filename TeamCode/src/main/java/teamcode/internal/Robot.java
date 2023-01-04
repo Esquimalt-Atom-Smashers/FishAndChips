@@ -47,6 +47,7 @@ public class Robot {
     /** Initializes the subsystems (excluding the webcam subsystem) */
     private void initSubsystems() {
         drivebaseSubsystem = new DrivebaseSubsystem(opMode.hardwareMap, opMode.telemetry);
+        drivebaseSubsystem.initImu();
         linkageSubsystem = new LinkageSubsystem(opMode.hardwareMap, opMode.telemetry);
         clawSubsystem = new ClawSubsystem(opMode.hardwareMap, opMode.telemetry);
         lightSubsystem = new LightSubsystem(opMode.hardwareMap, opMode.telemetry);
@@ -55,6 +56,13 @@ public class Robot {
     public void run() {
         drivebaseSubsystem.drive(-controller1.left_stick_y,
                 controller1.left_stick_x, controller1.right_stick_x);
+
+        if (controller1.x) {
+            ((Runnable) () -> drivebaseSubsystem.turnBy(90)).run();
+        }
+        if (controller1.y) {
+            ((Runnable) () -> drivebaseSubsystem.turnBy(-90)).run();
+        }
 
         if (controller1.dpad_left) {
             ((Runnable) () -> {

@@ -182,39 +182,36 @@ public class DrivebaseSubsystem extends CustomSubsystemBase {
     public void turnBy(double degree) {
         resetAngle();
 
-        double error = degree;
+//        double error = degree;
+//
+//        while (Math.abs(error) > 2.0) {
+//            drive(0,0, error > 0 ? TURN_SPEED : -TURN_SPEED);
+//            error = degree - getAngle();
+//        }
+//        drive(0, 0, 0);
+        if (degree > 0) {
+            drive(0, 0, TURN_SPEED);
+            while (getAngle() < degree) {
 
-        while (Math.abs(error) > 2.0) {
-            drive(0,0, error > 0 ? TURN_SPEED : -TURN_SPEED);
-            error = degree - getAngle();
-        }
-        drive(0, 0, 0);
-    }
-
-    public void turnTo(double heading) {
-        Orientation orientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        double error = heading - orientation.firstAngle;
-
-        if (error > 180) {
-            error -= 360;
-        }
-        if (error <= -180) {
-            error += 360;
+            }
+            drive(0, 0, 0);
         }
 
-        turnBy(error);
+        if (degree < 0) {
+            drive(0, 0, -TURN_SPEED);
+            while (getAngle() > degree) {
+
+            }
+            drive(0, 0, 0);
+        }
     }
 
     public void initImu() {
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.mode = BNO055IMU.SensorMode.IMU;
         parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
         parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
-        parameters.calibrationDataFile = "BNO055IMUCalibration.json";
-        parameters.loggingEnabled = true;
-        parameters.loggingTag = "IMU";
-        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
-
         imu.initialize(parameters);
     }
 
