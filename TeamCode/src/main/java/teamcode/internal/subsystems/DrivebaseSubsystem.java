@@ -127,9 +127,9 @@ public class DrivebaseSubsystem extends CustomSubsystemBase {
         Arrays.stream(motors)
                 .forEach(motor -> motor.setMode(DcMotor.RunMode.RUN_TO_POSITION));
 
-        drive(0, AUTO_DRIVE_SPEED, 0);
+        resetAngle();
         while(frontLeft.isBusy() && frontRight.isBusy() && rearLeft.isBusy() && rearRight.isBusy()) {
-
+            drive(0, AUTO_DRIVE_SPEED, getSteeringCorrection());
         }
 
         Arrays.stream(motors)
@@ -167,9 +167,9 @@ public class DrivebaseSubsystem extends CustomSubsystemBase {
         Arrays.stream(motors)
                 .forEach(motor -> motor.setMode(DcMotor.RunMode.RUN_TO_POSITION));
 
-        drive(AUTO_STRAFE_SPEED, 0, 0);
+        resetAngle();
         while (frontLeft.isBusy() && frontRight.isBusy() && rearLeft.isBusy() && rearRight.isBusy()) {
-
+            drive(AUTO_STRAFE_SPEED, 0, getSteeringCorrection());
         }
 
         Arrays.stream(motors)
@@ -182,13 +182,6 @@ public class DrivebaseSubsystem extends CustomSubsystemBase {
     public void turnBy(double degree) {
         resetAngle();
 
-//        double error = degree;
-//
-//        while (Math.abs(error) > 2.0) {
-//            drive(0,0, error > 0 ? TURN_SPEED : -TURN_SPEED);
-//            error = degree - getAngle();
-//        }
-//        drive(0, 0, 0);
         if (degree > 0) {
             drive(0, 0, TURN_SPEED);
             while (getAngle() < degree) {
@@ -204,6 +197,11 @@ public class DrivebaseSubsystem extends CustomSubsystemBase {
             }
             drive(0, 0, 0);
         }
+    }
+
+    public double getSteeringCorrection() {
+        return Range.clip(-getAngle() * 0.3, -1, 1);
+
     }
 
     public void initImu() {
