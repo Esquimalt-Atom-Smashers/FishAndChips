@@ -54,27 +54,30 @@ public class Robot {
     }
 
     public void run() {
+        opMode.telemetry.addLine("Angle: " + drivebaseSubsystem.getAngle());
+        opMode.telemetry.update();
         drivebaseSubsystem.drive(-controller1.left_stick_y,
                 controller1.left_stick_x, controller1.right_stick_x);
 
-        if (controller1.x) {
-            ((Runnable) () -> drivebaseSubsystem.turnBy(90)).run();
-        }
-        if (controller1.y) {
-            ((Runnable) () -> drivebaseSubsystem.turnBy(-90)).run();
-        }
-
-        if (controller1.dpad_left) {
+        if (controller1.dpad_up) {
             ((Runnable) () -> {
                 lightSubsystem.on(LightSubsystem.LightType.UNDER_GLOW);
                 lightSubsystem.on(LightSubsystem.LightType.ARM_GLOW);
             }).run();
         }
-        if (controller1.dpad_right) {
+        if (controller1.dpad_down) {
             ((Runnable) () -> {
                 lightSubsystem.off(LightSubsystem.LightType.UNDER_GLOW);
                 lightSubsystem.off(LightSubsystem.LightType.ARM_GLOW);
             }).run();
+        }
+
+        if (controller1.dpad_left) {
+            ((Runnable) () -> drivebaseSubsystem.snapLeft()).run();
+        }
+
+        if (controller1.dpad_right) {
+            ((Runnable) () -> drivebaseSubsystem.snapRight()).run();
         }
 
         if (controller1.left_bumper) {

@@ -37,7 +37,7 @@ public class DrivebaseSubsystem extends CustomSubsystemBase {
     /** Speeds in which the robot strafes and drives */
     private final double AUTO_STRAFE_SPEED = 0.3;
     private final double AUTO_DRIVE_SPEED = 0.3;
-    private final double TURN_SPEED = 0.4;
+    private final double TURN_SPEED = 0.7;
 
     /** Enum used for driving in different units of length */
     public enum DistanceUnits {
@@ -127,9 +127,10 @@ public class DrivebaseSubsystem extends CustomSubsystemBase {
         Arrays.stream(motors)
                 .forEach(motor -> motor.setMode(DcMotor.RunMode.RUN_TO_POSITION));
 
-        resetAngle();
+//        resetAngle();
+//        drive(0, AUTO_DRIVE_SPEED, 0);
         while(frontLeft.isBusy() && frontRight.isBusy() && rearLeft.isBusy() && rearRight.isBusy()) {
-            drive(0, AUTO_DRIVE_SPEED, getSteeringCorrection());
+            drive(0, AUTO_DRIVE_SPEED, /*getSteeringCorrection()*/ 0);
         }
 
         Arrays.stream(motors)
@@ -167,41 +168,39 @@ public class DrivebaseSubsystem extends CustomSubsystemBase {
         Arrays.stream(motors)
                 .forEach(motor -> motor.setMode(DcMotor.RunMode.RUN_TO_POSITION));
 
-        resetAngle();
         while (frontLeft.isBusy() && frontRight.isBusy() && rearLeft.isBusy() && rearRight.isBusy()) {
-            drive(AUTO_STRAFE_SPEED, 0, getSteeringCorrection());
+            drive(AUTO_STRAFE_SPEED, 0, 0);
         }
 
         Arrays.stream(motors)
-                .forEach(motor -> motor.setPower(0.0));
+                .forEach(motor -> motor.setPower(0));
 
         Arrays.stream(motors)
                 .forEach(motor -> motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER));
     }
 
-    public void turnBy(double degree) {
-        resetAngle();
-
-        if (degree > 0) {
+    public void snapRight() {
+        while ((int) (getAngle()) % 90 != 0) {
             drive(0, 0, TURN_SPEED);
-            while (getAngle() < degree) {
-
-            }
-            drive(0, 0, 0);
+            telemetry.addLine("Current Angle: " + getAngle());
         }
+        drive(0, 0, 0);
+    }
 
-        if (degree < 0) {
+    public void snapLeft() {
+        while ((int) (getAngle()) % 90 != 0) {
             drive(0, 0, -TURN_SPEED);
-            while (getAngle() > degree) {
-
-            }
-            drive(0, 0, 0);
         }
+        drive(0, 0, 0);
     }
 
     public double getSteeringCorrection() {
-        return Range.clip(-getAngle() * 0.3, -1, 1);
+        double headingError = 0 - getAngle();
 
+        while (headingError > 180)  headingError -= 360;
+        while (headingError <= -180) headingError += 360;
+
+        return Range.clip(headingError * 0.001, -1, 1);
     }
 
     public void initImu() {
