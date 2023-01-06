@@ -2,7 +2,7 @@
 
 ## Who We Are
 
-We are the Esquimalt Atom Smashers.
+We are team 20025 the Esquimalt Atom Smashers.
 
 ## Table of Contents
 
@@ -35,7 +35,14 @@ We started to experiment with a colour sensor to get values from the signal cone
 November 25th, the day before competition, everything was going grand. We were all packing up and getting our stuff ready for competition like doing the robot inspection checklist and making sure everything was updated. We noticed our Control hub was not up to date, whatever we thought, lets just update it. **BIG MISTAKE** for whatever reason **EVERYTHING** broke, none of the code was building, a million errors, and whenever we got the code built it would downgrade our control hub to a previous version[^3]. We were stressing out trying everything to get it working, eventually we just created a new project and started adding the code over 1 by 1. This fixed the issue we were having but unfourtantly we had to abondend the previous repository(the one with all the commits). Anyways with that being done for now *foreshadowing* we packed up and were ready for competition. 
 
 ### __November 26th 2022 ~~The Competition~~__ <br>
-test
+November 26th, the day of the competition, everyone was super pumped and excited to see FishAndChips in action. We had tested the autonomous prior to the competition and we were confident in it. Our first match of the FTC scrimmage, our drivers were ready, the code was uploaded, and FishAndChips was ready. The autonomous mode started once the buzzer went off... nothing happend. We waited 10 seconds, nothing happend. The programmers heart sunk when we realized, the autonomous was broken. Between matches we were quickly attempting to fix the code between matches but unfourtantly no matter what we did, we could not get it to work. By the end of the event, we finally figured out was wrong with it. Essentially the enviroment was so much different than our robotics room, the colour range was so different that the camera could not detect any of the signal sleeves[^4].
+
+### __November 28th 2022 ~~Working Autonomous?~~__ <br>
+We decieded to switch from using the camera to find colours to using the camera to detect april tags. There is a very well made library that works with OpenEasyCV which allows your camera to detect the unique april tags on the signal cones. We got it implemented and wrote the logic for the autonomous mode and it was working 90% of the time. This was a **HUGE** improvment, this allowed for a more consistent autonomous which was great. 
+
+### _Month of December ~~Break~~__ <br>
+Throughout December we made few minor changes to autonomous and the route. On top of this, we made a few general code changes(more documentation). Most of December was used for relaxing and taking a break. 
+
 <hr>
 
 ## Creating a subsystem
