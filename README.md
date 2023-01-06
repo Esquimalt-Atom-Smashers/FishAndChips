@@ -12,7 +12,7 @@ We are team 20025 the Esquimalt Atom Smashers.
 
 ## Programming Portfollio
 
-
+[Programming Log](programming-log.md)
 
 ## Creating a subsystem
 
