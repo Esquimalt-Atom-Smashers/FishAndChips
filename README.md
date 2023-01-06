@@ -11,7 +11,7 @@ We are team 20025 the Esquimalt Atom Smashers.
 
 ## Programming Portfollio
 
-[Programming Our Code](our-code.md)
+[Our Code](our-code.md)
 <br>
 [Programming Log](programming-log.md)
 <br>
