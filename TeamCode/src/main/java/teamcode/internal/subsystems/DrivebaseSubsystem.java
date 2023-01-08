@@ -39,13 +39,6 @@ public class DrivebaseSubsystem extends CustomSubsystemBase {
     private final double AUTO_DRIVE_SPEED = 0.3;
     private final double TURN_SPEED = 0.4;
 
-    /** Enum used for driving in different units of length */
-    public enum DistanceUnits {
-        CENTIMETRES,
-        INCHES,
-        TILES
-    }
-
     private BNO055IMU imu;
 
     private Orientation lastAngles = new Orientation();
@@ -93,10 +86,18 @@ public class DrivebaseSubsystem extends CustomSubsystemBase {
      * @param turn how much the robot will turn clockwise or counterclockwise
      */
     public void drive(double forward, double strafe, double turn) {
-        frontLeft.setPower(Range.clip(forward + strafe + turn, -1, 1));
-        frontRight.setPower(Range.clip(forward - strafe - turn, -1, 1));
-        rearLeft.setPower(Range.clip(forward - strafe + turn, -1, 1));
-        rearRight.setPower(Range.clip(forward + strafe - turn, -1, 1));
+
+        double deg = getAngle();
+
+        double gyroRadians = deg * Math.PI/180;
+
+        double fwd = forward * Math.cos(gyroRadians) + strafe * Math.sin(gyroRadians);
+        double strafe2 = -forward * Math.sin(gyroRadians) + strafe * Math.cos(gyroRadians);
+
+        frontLeft.setPower(Range.clip(fwd + strafe2 + turn, -1, 1));
+        frontRight.setPower(Range.clip(fwd - strafe2 - turn, -1, 1));
+        rearLeft.setPower(Range.clip(fwd - strafe2 + turn, -1, 1));
+        rearRight.setPower(Range.clip(fwd + strafe2 - turn, -1, 1));
     }
 
     /**
@@ -106,23 +107,9 @@ public class DrivebaseSubsystem extends CustomSubsystemBase {
      * @param distance the distance the robot will drive
      */
     public void drive(DistanceUnits unit, double distance) {
-        switch (unit) {
-            case CENTIMETRES:
-                Arrays.stream(motors)
-                        .forEach(motor -> motor.setTargetPosition(motor.getCurrentPosition()
-                                + (int)(distance * EncoderConstants.Gobilda312RPM.PULSES_PER_CENTIMETRE)));
-                break;
-            case INCHES:
-                Arrays.stream(motors)
-                        .forEach(motor -> motor.setTargetPosition(motor.getCurrentPosition()
-                                + (int)(distance * EncoderConstants.Gobilda312RPM.PULSES_PER_INCH)));
-                break;
-            case TILES:
-                Arrays.stream(motors)
-                        .forEach(motor -> motor.setTargetPosition(motor.getCurrentPosition()
-                                + (int)(distance * EncoderConstants.Gobilda312RPM.PULSES_PER_TILE)));
-                break;
-        }
+        Arrays.stream(motors)
+                .forEach(motor -> motor.setTargetPosition(motor.getCurrentPosition()
+                        + (int)(unit.toUnit(distance))));
 
         Arrays.stream(motors)
                 .forEach(motor -> motor.setMode(DcMotor.RunMode.RUN_TO_POSITION));
@@ -146,18 +133,7 @@ public class DrivebaseSubsystem extends CustomSubsystemBase {
      * @param distance the distance the robot will strafe
      */
     public void strafe(DistanceUnits unit, int distance) {
-        int target = 0;
-        switch (unit) {
-            case CENTIMETRES:
-                target = (int) (distance * EncoderConstants.Gobilda312RPM.PULSES_PER_CENTIMETRE);
-                break;
-            case INCHES:
-                target = (int) (distance * EncoderConstants.Gobilda312RPM.PULSES_PER_INCH);
-                break;
-            case TILES:
-                target = (int) (distance * EncoderConstants.Gobilda312RPM.PULSES_PER_TILE);
-                break;
-        }
+        int target = (int) unit.toUnit(distance);
 
         frontLeft.setTargetPosition(frontLeft.getCurrentPosition() + target);
         frontRight.setTargetPosition(frontRight.getCurrentPosition() - target);
@@ -179,7 +155,7 @@ public class DrivebaseSubsystem extends CustomSubsystemBase {
                 .forEach(motor -> motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER));
     }
 
-    public void turnBy(double degree) {
+    public void rotateBy(double degree) {
         resetAngle();
 
         if (degree > 0) {
@@ -222,7 +198,6 @@ public class DrivebaseSubsystem extends CustomSubsystemBase {
         Orientation orientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         double deltaAngle = orientation.firstAngle - lastAngles.firstAngle;
 
-        //Normalize the angle
         if (deltaAngle > 180) {
             deltaAngle -= 360;
         }
@@ -233,6 +208,23 @@ public class DrivebaseSubsystem extends CustomSubsystemBase {
         currentAngle += deltaAngle;
         lastAngles = orientation;
         return currentAngle;
+    }
+
+    /** Enum used for driving in different units of length */
+    public enum DistanceUnits {
+        CENTIMETRES(EncoderConstants.Gobilda312RPM.PULSES_PER_CENTIMETRE),
+        INCHES(EncoderConstants.Gobilda312RPM.PULSES_PER_INCH),
+        TILES(EncoderConstants.Gobilda312RPM.PULSES_PER_TILE);
+
+        private double conversionFactor;
+
+        DistanceUnits(double conversionFactor) {
+            this.conversionFactor = conversionFactor;
+        }
+
+        public double toUnit(double value) {
+            return value * conversionFactor;
+        }
     }
 }
 
