@@ -1,4 +1,4 @@
-package teamcode.internal.auto.modes.red;
+package teamcode.internal.automodes.blue;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -7,14 +7,13 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.openftc.apriltag.AprilTagDetection;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 import teamcode.internal.Robot;
 import teamcode.internal.subsystems.DrivebaseSubsystem;
 import teamcode.internal.util.AprilTagConstants;
 
-@Autonomous(name="Auto: Red Alliance Left")
-public class AdvancedAutonomousLeftRed extends LinearOpMode {
+@Autonomous(name="Auto: Blue Alliance Right")
+public class AdvancedAutonomousRightBlue extends LinearOpMode {
     private Robot robot;
 
     private boolean tagFound = false;
@@ -36,15 +35,18 @@ public class AdvancedAutonomousLeftRed extends LinearOpMode {
 
         if (opModeIsActive()) {
             if (tagFound) {
-                deploy();
-                wait(1000);
-
-                driveToPlaceCone();
-                wait(1000);
-
-                wait(1000);
-
-                driveToParking();
+//                deploy();
+//                wait(1000);
+//
+//                driveToPlaceCone();
+//                wait(1000);
+//
+//                goBackToHome();
+//                wait(1000);
+//
+//                driveToParking();
+                telemetry.addLine("Tag Parking Zone: " + parkingZone);
+                telemetry.update();
             }
             else {
                 robot.getDrivebaseSubsystem().drive(DrivebaseSubsystem.DistanceUnits.INCHES, 28);
@@ -74,11 +76,11 @@ public class AdvancedAutonomousLeftRed extends LinearOpMode {
     }
 
     private void driveToPlaceCone() {
-        robot.getDrivebaseSubsystem().strafe(DrivebaseSubsystem.DistanceUnits.INCHES, 28);
+        robot.getDrivebaseSubsystem().strafe(DrivebaseSubsystem.DistanceUnits.INCHES, -28);
 
         robot.getDrivebaseSubsystem().drive(DrivebaseSubsystem.DistanceUnits.INCHES, 28 * 3);
 
-        robot.getDrivebaseSubsystem().strafe(DrivebaseSubsystem.DistanceUnits.INCHES, -14);
+        robot.getDrivebaseSubsystem().strafe(DrivebaseSubsystem.DistanceUnits.INCHES, 14);
 
         robot.getClawSubsystem().openClaw();
     }

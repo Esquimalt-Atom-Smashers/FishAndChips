@@ -9,12 +9,14 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.robotcore.external.Predicate;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
+import java.nio.channels.ScatteringByteChannel;
 import java.util.Arrays;
 
 import teamcode.internal.util.EncoderConstants;
@@ -24,6 +26,9 @@ import teamcode.internal.util.EncoderConstants;
  *
  * @author Esquimalt Atom Smashers
  */
+
+
+
 public class DrivebaseSubsystem extends CustomSubsystemBase {
     /** Motors which control the drivebase */
     private final DcMotor frontLeft;
@@ -111,19 +116,12 @@ public class DrivebaseSubsystem extends CustomSubsystemBase {
                 .forEach(motor -> motor.setTargetPosition(motor.getCurrentPosition()
                         + (int)(unit.toUnit(distance))));
 
-        Arrays.stream(motors)
-                .forEach(motor -> motor.setMode(DcMotor.RunMode.RUN_TO_POSITION));
+        setMotorMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        resetAngle();
-        while(frontLeft.isBusy() && frontRight.isBusy() && rearLeft.isBusy() && rearRight.isBusy()) {
-            drive(0, AUTO_DRIVE_SPEED, getSteeringCorrection());
-        }
+        driveToPosition(AUTO_DRIVE_SPEED, 0, true);
+        stopMotors();
 
-        Arrays.stream(motors)
-                .forEach(motor -> motor.setPower(0));
-
-        Arrays.stream(motors)
-                .forEach(motor -> motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER));
+        setMotorMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     /**
@@ -140,39 +138,30 @@ public class DrivebaseSubsystem extends CustomSubsystemBase {
         rearLeft.setTargetPosition(rearLeft.getCurrentPosition() - target);
         rearRight.setTargetPosition(rearRight.getCurrentPosition() + target);
 
-        Arrays.stream(motors)
-                .forEach(motor -> motor.setMode(DcMotor.RunMode.RUN_TO_POSITION));
+        setMotorMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        resetAngle();
-        while (frontLeft.isBusy() && frontRight.isBusy() && rearLeft.isBusy() && rearRight.isBusy()) {
-            drive(AUTO_STRAFE_SPEED, 0, getSteeringCorrection());
-        }
+        driveToPosition(0, AUTO_STRAFE_SPEED, true);
+        stopMotors();
 
-        Arrays.stream(motors)
-                .forEach(motor -> motor.setPower(0.0));
-
-        Arrays.stream(motors)
-                .forEach(motor -> motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER));
+        setMotorMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
-    public void rotateBy(double degree) {
-        resetAngle();
-
-        if (degree > 0) {
-            drive(0, 0, TURN_SPEED);
-            while (getAngle() < degree) {
-
+    public void driveToPosition(double forward, double strafe, boolean stabilize) {
+        ((Runnable) () -> {
+            while (frontLeft.isBusy() && frontRight.isBusy() && rearLeft.isBusy() && rearRight.isBusy()) {
+                drive(forward, strafe, stabilize ? 0 : getSteeringCorrection());
             }
-            drive(0, 0, 0);
-        }
+        }).run();
+    }
 
-        if (degree < 0) {
-            drive(0, 0, -TURN_SPEED);
-            while (getAngle() > degree) {
+    public void stopMotors() {
+        Arrays.stream(motors)
+                .forEach(motor -> motor.setPower(0));
+    }
 
-            }
-            drive(0, 0, 0);
-        }
+    public void setMotorMode(DcMotor.RunMode runMode) {
+        Arrays.stream(motors)
+                .forEach(motor -> motor.setMode(runMode));
     }
 
     public double getSteeringCorrection() {
