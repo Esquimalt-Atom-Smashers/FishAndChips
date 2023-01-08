@@ -1,4 +1,4 @@
-package teamcode.internal.opmodes;
+package teamcode.internal.teleopmodes;
 
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -18,9 +18,6 @@ public class MainOpMode extends LinearOpMode {
         waitForStart();
         while (opModeIsActive() && !isStopRequested()) {
             robot.run();
-            robot.getDrivebaseSubsystem().drive(-gamepad1.left_stick_y,
-                    gamepad1.left_stick_x,
-                    gamepad1.right_stick_x);
         }
     }
 }

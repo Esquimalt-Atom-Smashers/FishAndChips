@@ -1,4 +1,4 @@
-package teamcode.internal.auto.modes.red;
+package teamcode.internal.automodes.red;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
