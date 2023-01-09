@@ -1,10 +1,14 @@
 package teamcode.internal;
 
+import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 import java.util.ArrayList;
 
+import teamcode.internal.events.Button;
+import teamcode.internal.events.ButtonState;
+import teamcode.internal.events.CustomGamepad;
 import teamcode.internal.subsystems.ClawSubsystem;
 import teamcode.internal.subsystems.DrivebaseSubsystem;
 import teamcode.internal.subsystems.LightSubsystem;
@@ -23,6 +27,7 @@ public class Robot {
 
     /** Controllers declared here */
     private Gamepad controller1;
+    private CustomGamepad customGamepad;
 
     /** Subsystems declared here */
     private DrivebaseSubsystem drivebaseSubsystem;
@@ -42,6 +47,7 @@ public class Robot {
         this.opMode = opMode;
         initSubsystems();
         controller1 = opMode.gamepad1;
+        customGamepad = new CustomGamepad(controller1);
     }
 
     /** Initializes the subsystems (excluding the webcam subsystem) */
@@ -54,59 +60,61 @@ public class Robot {
     }
 
     public void run() {
-        opMode.telemetry.addLine("Angle: " + drivebaseSubsystem.getAngle());
-        opMode.telemetry.update();
+//        customGamepad.register(Button.A, ButtonState.HELD, () -> linkageSubsystem.lift());
+//        customGamepad.register(Button.A, ButtonState.RELEASED, () -> linkageSubsystem.stop());
+//
         drivebaseSubsystem.drive(-controller1.left_stick_y,
-                controller1.left_stick_x, controller1.right_stick_x);
+                controller1.left_stick_x, controller1.right_stick_x, false);
 
-        if (controller1.dpad_up) {
-            ((Runnable) () -> {
-                lightSubsystem.on(LightSubsystem.LightType.UNDER_GLOW);
-                lightSubsystem.on(LightSubsystem.LightType.ARM_GLOW);
-            }).run();
-        }
-        if (controller1.dpad_down) {
-            ((Runnable) () -> {
-                lightSubsystem.off(LightSubsystem.LightType.UNDER_GLOW);
-                lightSubsystem.off(LightSubsystem.LightType.ARM_GLOW);
-            }).run();
-        }
-
-        if (controller1.dpad_left) {
-            ((Runnable) () -> drivebaseSubsystem.snapLeft()).run();
-        }
-
-        if (controller1.dpad_right) {
-            ((Runnable) () -> drivebaseSubsystem.snapRight()).run();
-        }
-
-        if (controller1.left_bumper) {
-            ((Runnable) () -> clawSubsystem.closeClaw()).run();
-        }
-
-        if (controller1.right_bumper) {
-            ((Runnable) () -> clawSubsystem.openClaw()).run();
-        }
-
-        if (controller1.a && linkageSubsystem.getLinkage() < 115 * EncoderConstants.Gobilda60RPM.PULSES_PER_DEGREE) {
-            ((Runnable) () -> {
-                linkageSubsystem.lift();
-                while (controller1.a && linkageSubsystem.getLinkage() < 115 * EncoderConstants.Gobilda60RPM.PULSES_PER_DEGREE) {
-
-                }
-                linkageSubsystem.stop();
-            }).run();
-        }
-
-        if (controller1.b) {
-            linkageSubsystem.drop();
-            ((Runnable) () -> {
-                while (controller1.b) {
-
-                }
-                linkageSubsystem.stop();
-            }).run();
-        }
+//        if (controller1.dpad_up) {
+//            ((Runnable) () -> {
+//                lightSubsystem.on(LightSubsystem.LightType.UNDER_GLOW);
+//                lightSubsystem.on(LightSubsystem.LightType.ARM_GLOW);
+//            }).run();
+//        }
+//        if (controller1.dpad_down) {
+//            ((Runnable) () -> {
+//                lightSubsystem.off(LightSubsystem.LightType.UNDER_GLOW);
+//                lightSubsystem.off(LightSubsystem.LightType.ARM_GLOW);
+//            }).run();
+//        }
+//
+//        if (controller1.dpad_left) {
+//            ((Runnable) () -> drivebaseSubsystem.snapLeft()).run();
+//        }
+//
+//        if (controller1.dpad_right) {
+//            ((Runnable) () -> drivebaseSubsystem.snapRight()).run();
+//        }
+//
+//        if (controller1.left_bumper) {
+//            ((Runnable) () -> clawSubsystem.closeClaw()).run();
+//        }
+//
+//        if (controller1.right_bumper) {
+//            ((Runnable) () -> clawSubsystem.openClaw()).run();
+//        }
+//
+//        if (controller1.a && linkageSubsystem.getLinkage() < 115 * EncoderConstants.Gobilda60RPM.PULSES_PER_DEGREE) {
+//            ((Runnable) () -> {
+//                linkageSubsystem.lift();
+//                while (controller1.a && linkageSubsystem.getLinkage() < 115 * EncoderConstants.Gobilda60RPM.PULSES_PER_DEGREE) {
+//
+//                }
+//                linkageSubsystem.stop();
+//            }).run();
+//        }
+//
+//        if (controller1.b) {
+//            linkageSubsystem.drop();
+//            ((Runnable) () -> {
+//                while (controller1.b) {
+//
+//                }
+//                linkageSubsystem.stop();
+//            }).run();
+//        }
+        customGamepad.handle();
     }
 
     /** Initializes the webcam subsystem */

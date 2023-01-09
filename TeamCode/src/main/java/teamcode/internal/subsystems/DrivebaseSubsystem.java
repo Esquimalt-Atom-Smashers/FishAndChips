@@ -92,11 +92,11 @@ public class DrivebaseSubsystem extends CustomSubsystemBase {
      * @param forward how far the robot will drive forward or backwards
      * @param turn how much the robot will turn clockwise or counterclockwise
      */
-    public void drive(double forward, double strafe, double turn) {
-        frontLeft.setPower(Range.clip(forward + strafe + turn, -1, 1));
-        frontRight.setPower(Range.clip(forward - strafe - turn, -1, 1));
-        rearLeft.setPower(Range.clip(forward - strafe + turn, -1, 1));
-        rearRight.setPower(Range.clip(forward + strafe - turn, -1, 1));
+    public void drive(double forward, double strafe, double turn, boolean scaled) {
+        frontLeft.setPower(scaled ? Math.pow(Range.clip(forward + strafe + turn, -1, 1), 3) : Range.clip(forward + strafe + turn, -1, 1));
+        frontRight.setPower(scaled ? Math.pow(Range.clip(forward - strafe - turn, -1, 1), 3) : Range.clip(forward - strafe - turn, -1, 1));
+        rearLeft.setPower(scaled ? Math.pow(Range.clip(forward - strafe + turn, -1, 1), 3) : Range.clip(forward - strafe + turn, -1, 1));
+        rearRight.setPower(scaled ? Math.pow(Range.clip(forward + strafe - turn, -1, 1), 3) : Range.clip(forward + strafe - turn, -1, 1));
     }
 
     /**
@@ -130,7 +130,7 @@ public class DrivebaseSubsystem extends CustomSubsystemBase {
 //        resetAngle();
 //        drive(0, AUTO_DRIVE_SPEED, 0);
         while(frontLeft.isBusy() && frontRight.isBusy() && rearLeft.isBusy() && rearRight.isBusy()) {
-            drive(0, AUTO_DRIVE_SPEED, /*getSteeringCorrection()*/ 0);
+            drive(0, AUTO_DRIVE_SPEED, /*getSteeringCorrection()*/ 0, false);
         }
 
         Arrays.stream(motors)
@@ -169,7 +169,7 @@ public class DrivebaseSubsystem extends CustomSubsystemBase {
                 .forEach(motor -> motor.setMode(DcMotor.RunMode.RUN_TO_POSITION));
 
         while (frontLeft.isBusy() && frontRight.isBusy() && rearLeft.isBusy() && rearRight.isBusy()) {
-            drive(AUTO_STRAFE_SPEED, 0, 0);
+            drive(AUTO_STRAFE_SPEED, 0, 0, false);
         }
 
         Arrays.stream(motors)
@@ -181,17 +181,17 @@ public class DrivebaseSubsystem extends CustomSubsystemBase {
 
     public void snapRight() {
         while ((int) (getAngle()) % 90 != 0) {
-            drive(0, 0, TURN_SPEED);
+            drive(0, 0, TURN_SPEED, false);
             telemetry.addLine("Current Angle: " + getAngle());
         }
-        drive(0, 0, 0);
+        drive(0, 0, 0, false);
     }
 
     public void snapLeft() {
         while ((int) (getAngle()) % 90 != 0) {
-            drive(0, 0, -TURN_SPEED);
+            drive(0, 0, -TURN_SPEED, false);
         }
-        drive(0, 0, 0);
+        drive(0, 0, 0, false);
     }
 
     public double getSteeringCorrection() {
