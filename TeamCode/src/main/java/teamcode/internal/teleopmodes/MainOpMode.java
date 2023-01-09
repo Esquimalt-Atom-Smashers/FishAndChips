@@ -1,4 +1,4 @@
-package teamcode.internal.opmodes;
+package teamcode.internal.teleopmodes;
 
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;

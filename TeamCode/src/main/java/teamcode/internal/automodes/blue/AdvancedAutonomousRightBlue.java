@@ -1,4 +1,4 @@
-package teamcode.internal.auto.modes.blue;
+package teamcode.internal.automodes.blue;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -7,7 +7,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.openftc.apriltag.AprilTagDetection;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 import teamcode.internal.Robot;
 import teamcode.internal.subsystems.DrivebaseSubsystem;

@@ -1,13 +1,11 @@
 package teamcode.internal;
 
-import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 import java.util.ArrayList;
 
 import teamcode.internal.events.Button;
-import teamcode.internal.events.ButtonState;
 import teamcode.internal.events.CustomGamepad;
 import teamcode.internal.subsystems.ClawSubsystem;
 import teamcode.internal.subsystems.DrivebaseSubsystem;
@@ -26,8 +24,7 @@ public class Robot {
     private final OpMode opMode;
 
     /** Controllers declared here */
-    private Gamepad controller1;
-    private CustomGamepad customGamepad;
+    private CustomGamepad controller1;
 
     /** Subsystems declared here */
     private DrivebaseSubsystem drivebaseSubsystem;
@@ -46,8 +43,7 @@ public class Robot {
     public Robot(OpMode opMode) {
         this.opMode = opMode;
         initSubsystems();
-        controller1 = opMode.gamepad1;
-        customGamepad = new CustomGamepad(controller1);
+        controller1 = new CustomGamepad(opMode.gamepad1);
     }
 
     /** Initializes the subsystems (excluding the webcam subsystem) */
@@ -59,32 +55,30 @@ public class Robot {
         lightSubsystem = new LightSubsystem(opMode.hardwareMap, opMode.telemetry);
     }
 
-    public void run() {
-//        customGamepad.register(Button.A, ButtonState.HELD, () -> linkageSubsystem.lift());
-//        customGamepad.register(Button.A, ButtonState.RELEASED, () -> linkageSubsystem.stop());
-//
-        drivebaseSubsystem.drive(-controller1.left_stick_y,
-                controller1.left_stick_x, controller1.right_stick_x, false);
+    public void run() throws InterruptedException {
 
-//        if (controller1.dpad_up) {
+        controller1.setDefaultEvent(() -> drivebaseSubsystem.drive(-opMode.gamepad1.left_stick_y,
+                opMode.gamepad1.left_stick_x, opMode.gamepad1.right_stick_x));
+
+        controller1.setOnHeld(Button.A, () -> linkageSubsystem.lift());
+        controller1.setOnReleased(Button.A, () -> linkageSubsystem.stop());
+
+        controller1.handleEvents();
+
+//        drivebaseSubsystem.drive(-controller1.left_stick_y,
+//                controller1.left_stick_x, controller1.right_stick_x);
+//
+//        if (controller1.dpad_left) {
 //            ((Runnable) () -> {
 //                lightSubsystem.on(LightSubsystem.LightType.UNDER_GLOW);
 //                lightSubsystem.on(LightSubsystem.LightType.ARM_GLOW);
 //            }).run();
 //        }
-//        if (controller1.dpad_down) {
+//        if (controller1.dpad_right) {
 //            ((Runnable) () -> {
 //                lightSubsystem.off(LightSubsystem.LightType.UNDER_GLOW);
 //                lightSubsystem.off(LightSubsystem.LightType.ARM_GLOW);
 //            }).run();
-//        }
-//
-//        if (controller1.dpad_left) {
-//            ((Runnable) () -> drivebaseSubsystem.snapLeft()).run();
-//        }
-//
-//        if (controller1.dpad_right) {
-//            ((Runnable) () -> drivebaseSubsystem.snapRight()).run();
 //        }
 //
 //        if (controller1.left_bumper) {
@@ -114,7 +108,6 @@ public class Robot {
 //                linkageSubsystem.stop();
 //            }).run();
 //        }
-        customGamepad.handle();
     }
 
     /** Initializes the webcam subsystem */

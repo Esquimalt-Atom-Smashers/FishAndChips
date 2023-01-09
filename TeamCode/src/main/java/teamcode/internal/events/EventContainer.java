@@ -1,39 +1,57 @@
 package teamcode.internal.events;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class EventContainer {
     private ButtonState state;
+    private Map<ButtonState, Event> eventHandlers = new HashMap<>();
 
-    private final HashMap<ButtonState, ButtonEvent> eventHandlers = new HashMap<>();
-
-    private static ButtonState generateState(boolean input, ButtonState oldState) {
+    private static ButtonState generateNextState(boolean buttonInput, ButtonState oldState) {
         switch (oldState) {
             case OFF:
-                return input ? ButtonState.PRESSED : ButtonState.OFF;
+                if (buttonInput) {
+                    return ButtonState.PRESSED;
+                } else {
+                    return ButtonState.OFF;
+                }
             case PRESSED:
-                return input ? ButtonState.HELD : ButtonState.OFF;
+                if (buttonInput) {
+                    return ButtonState.HELD;
+                } else {
+                    return ButtonState.RELEASED;
+                }
             case HELD:
-                return input ? ButtonState.HELD : ButtonState.RELEASED;
+                if (buttonInput) {
+                    return ButtonState.HELD;
+                } else {
+                    return ButtonState.RELEASED;
+                }
             case RELEASED:
-                return input ? ButtonState.PRESSED : ButtonState.OFF;
+                if (buttonInput) {
+                    return ButtonState.PRESSED;
+                } else {
+                    return ButtonState.OFF;
+                }
             default:
                 return ButtonState.OFF;
         }
     }
 
-    public EventContainer addEventHandler(ButtonState state, ButtonEvent event) {
-        eventHandlers.put(state, event);
+    public EventContainer addHandler(ButtonState event, Event listener) {
+        eventHandlers.put(event, listener);
         return this;
     }
 
-    public void handle() {
-
-    }
-
-    public EventContainer nextState(boolean input) {
-        state = generateState(input, state);
+    public EventContainer handle() {
+        if (eventHandlers.containsKey(state)) {
+            eventHandlers.get(state).onEvent();
+        }
         return this;
     }
 
+    public EventContainer nextState(boolean buttonInput) {
+        state = generateNextState(buttonInput, state);
+        return this;
+    }
 }
