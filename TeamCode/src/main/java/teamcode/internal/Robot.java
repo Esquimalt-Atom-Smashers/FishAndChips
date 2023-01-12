@@ -24,7 +24,8 @@ public class Robot {
     private final OpMode opMode;
 
     /** Controllers declared here */
-    private CustomGamepad controller1;
+//    private CustomGamepad controller1;
+    private Gamepad controller1;
 
     /** Subsystems declared here */
     private DrivebaseSubsystem drivebaseSubsystem;
@@ -43,7 +44,8 @@ public class Robot {
     public Robot(OpMode opMode) {
         this.opMode = opMode;
         initSubsystems();
-        controller1 = new CustomGamepad(opMode.gamepad1);
+//        controller1 = new CustomGamepad(opMode.gamepad1);
+        controller1 = opMode.gamepad1;
     }
 
     /** Initializes the subsystems (excluding the webcam subsystem) */
@@ -56,58 +58,57 @@ public class Robot {
     }
 
     public void run() throws InterruptedException {
+//        controller1.setDefaultEvent(() -> drivebaseSubsystem.drive(-opMode.gamepad1.left_stick_y,
+//                opMode.gamepad1.left_stick_x, opMode.gamepad1.right_stick_x));
+//
+//        controller1.setOnHeld(Button.A, () -> linkageSubsystem.lift());
+//        controller1.setOnReleased(Button.A, () -> linkageSubsystem.stop());
+//
+//        controller1.handleEvents();
 
-        controller1.setDefaultEvent(() -> drivebaseSubsystem.drive(-opMode.gamepad1.left_stick_y,
-                opMode.gamepad1.left_stick_x, opMode.gamepad1.right_stick_x));
+        drivebaseSubsystem.drive(-controller1.left_stick_y,
+                controller1.left_stick_x, controller1.right_stick_x);
 
-        controller1.setOnHeld(Button.A, () -> linkageSubsystem.lift());
-        controller1.setOnReleased(Button.A, () -> linkageSubsystem.stop());
+        if (controller1.dpad_left) {
+            ((Runnable) () -> {
+                lightSubsystem.on(LightSubsystem.LightType.UNDER_GLOW);
+                lightSubsystem.on(LightSubsystem.LightType.ARM_GLOW);
+            }).run();
+        }
+        if (controller1.dpad_right) {
+            ((Runnable) () -> {
+                lightSubsystem.off(LightSubsystem.LightType.UNDER_GLOW);
+                lightSubsystem.off(LightSubsystem.LightType.ARM_GLOW);
+            }).run();
+        }
 
-        controller1.handleEvents();
+        if (controller1.left_bumper) {
+            ((Runnable) () -> clawSubsystem.closeClaw()).run();
+        }
 
-//        drivebaseSubsystem.drive(-controller1.left_stick_y,
-//                controller1.left_stick_x, controller1.right_stick_x);
-//
-//        if (controller1.dpad_left) {
-//            ((Runnable) () -> {
-//                lightSubsystem.on(LightSubsystem.LightType.UNDER_GLOW);
-//                lightSubsystem.on(LightSubsystem.LightType.ARM_GLOW);
-//            }).run();
-//        }
-//        if (controller1.dpad_right) {
-//            ((Runnable) () -> {
-//                lightSubsystem.off(LightSubsystem.LightType.UNDER_GLOW);
-//                lightSubsystem.off(LightSubsystem.LightType.ARM_GLOW);
-//            }).run();
-//        }
-//
-//        if (controller1.left_bumper) {
-//            ((Runnable) () -> clawSubsystem.closeClaw()).run();
-//        }
-//
-//        if (controller1.right_bumper) {
-//            ((Runnable) () -> clawSubsystem.openClaw()).run();
-//        }
-//
-//        if (controller1.a && linkageSubsystem.getLinkage() < 115 * EncoderConstants.Gobilda60RPM.PULSES_PER_DEGREE) {
-//            ((Runnable) () -> {
-//                linkageSubsystem.lift();
-//                while (controller1.a && linkageSubsystem.getLinkage() < 115 * EncoderConstants.Gobilda60RPM.PULSES_PER_DEGREE) {
-//
-//                }
-//                linkageSubsystem.stop();
-//            }).run();
-//        }
-//
-//        if (controller1.b) {
-//            linkageSubsystem.drop();
-//            ((Runnable) () -> {
-//                while (controller1.b) {
-//
-//                }
-//                linkageSubsystem.stop();
-//            }).run();
-//        }
+        if (controller1.right_bumper) {
+            ((Runnable) () -> clawSubsystem.openClaw()).run();
+        }
+
+        if (controller1.a && linkageSubsystem.getLinkage() < 115 * EncoderConstants.Gobilda60RPM.PULSES_PER_DEGREE) {
+            ((Runnable) () -> {
+                linkageSubsystem.lift();
+                while (controller1.a && linkageSubsystem.getLinkage() < 115 * EncoderConstants.Gobilda60RPM.PULSES_PER_DEGREE) {
+
+                }
+                linkageSubsystem.stop();
+            }).run();
+        }
+
+        if (controller1.b) {
+            linkageSubsystem.drop();
+            ((Runnable) () -> {
+                while (controller1.b) {
+
+                }
+                linkageSubsystem.stop();
+            }).run();
+        }
     }
 
     /** Initializes the webcam subsystem */

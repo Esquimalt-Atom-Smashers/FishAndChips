@@ -91,18 +91,15 @@ public class DrivebaseSubsystem extends CustomSubsystemBase {
      * @param turn how much the robot will turn clockwise or counterclockwise
      */
     public void drive(double forward, double strafe, double turn) {
+        double gyroRadians = -imu.getAngularOrientation().firstAngle;
 
-        double deg = getAngle();
+        double rotateX = strafe * Math.cos(gyroRadians) - forward * Math.sin(gyroRadians);
+        double rotateY = strafe * Math.sin(gyroRadians) + forward * Math.cos(gyroRadians);
 
-        double gyroRadians = deg * Math.PI/180;
-
-        double fwd = forward * Math.cos(gyroRadians) + strafe * Math.sin(gyroRadians);
-        double strafe2 = -forward * Math.sin(gyroRadians) + strafe * Math.cos(gyroRadians);
-
-        frontLeft.setPower(Range.clip(fwd + strafe2 + turn, -1, 1));
-        frontRight.setPower(Range.clip(fwd - strafe2 - turn, -1, 1));
-        rearLeft.setPower(Range.clip(fwd - strafe2 + turn, -1, 1));
-        rearRight.setPower(Range.clip(fwd + strafe2 - turn, -1, 1));
+        frontLeft.setPower(Range.clip(rotateY + rotateX + turn, -1, 1));
+        frontRight.setPower(Range.clip(rotateY - rotateX - turn, -1, 1));
+        rearLeft.setPower(Range.clip(rotateY - rotateX + turn, -1, 1));
+        rearRight.setPower(Range.clip(rotateY + rotateX - turn, -1, 1));
     }
 
     /**
@@ -118,7 +115,7 @@ public class DrivebaseSubsystem extends CustomSubsystemBase {
 
         setMotorMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        driveToPosition(AUTO_DRIVE_SPEED, 0, true);
+        driveToPosition(AUTO_DRIVE_SPEED, 0, 0);
         stopMotors();
 
         setMotorMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -140,18 +137,16 @@ public class DrivebaseSubsystem extends CustomSubsystemBase {
 
         setMotorMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        driveToPosition(0, AUTO_STRAFE_SPEED, true);
+        driveToPosition(0, AUTO_STRAFE_SPEED, 0);
         stopMotors();
 
         setMotorMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
-    public void driveToPosition(double forward, double strafe, boolean stabilize) {
-        ((Runnable) () -> {
-            while (frontLeft.isBusy() && frontRight.isBusy() && rearLeft.isBusy() && rearRight.isBusy()) {
-                drive(forward, strafe, stabilize ? 0 : getSteeringCorrection());
-            }
-        }).run();
+    public void driveToPosition(double forward, double strafe, double turn) {
+        while (frontLeft.isBusy() && frontRight.isBusy() && rearLeft.isBusy() && rearRight.isBusy()) {
+            drive(forward, strafe, turn);
+        }
     }
 
     public void stopMotors() {
@@ -164,39 +159,13 @@ public class DrivebaseSubsystem extends CustomSubsystemBase {
                 .forEach(motor -> motor.setMode(runMode));
     }
 
-    public double getSteeringCorrection() {
-        return Range.clip(-getAngle() * 0.3, -1, 1);
-
-    }
-
     public void initImu() {
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.mode = BNO055IMU.SensorMode.IMU;
-        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
         parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
         imu.initialize(parameters);
-    }
-
-    public void resetAngle() {
-        lastAngles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        currentAngle = 0;
-    }
-
-    public double getAngle() {
-        Orientation orientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        double deltaAngle = orientation.firstAngle - lastAngles.firstAngle;
-
-        if (deltaAngle > 180) {
-            deltaAngle -= 360;
-        }
-        if (deltaAngle <= -180) {
-            deltaAngle += 360;
-        }
-
-        currentAngle += deltaAngle;
-        lastAngles = orientation;
-        return currentAngle;
     }
 
     /** Enum used for driving in different units of length */
