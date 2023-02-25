@@ -12,7 +12,7 @@ import teamcode.internal.Robot;
 import teamcode.internal.subsystems.DrivebaseSubsystem;
 import teamcode.internal.util.AprilTagConstants;
 
-@Autonomous(name="Auto: Blue Alliance Right")
+@Autonomous(name="Main Autonomous Mode(right)")
 public class AdvancedAutonomousRightBlue extends LinearOpMode {
     private Robot robot;
 
@@ -21,36 +21,24 @@ public class AdvancedAutonomousRightBlue extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        robot = new Robot(this);
+        robot = new Robot(this, 0, 0);
 
         robot.initWebcamSubsystem();
-        robot.getWebcamSubsystem().startStreaming();
 
-        while (!isStarted() && !isStopRequested()) {
-            detectTag();
-            if (tagFound) {
-                break;
-            }
-        }
-
+        waitForStart();
         if (opModeIsActive()) {
-            if (tagFound) {
-//                deploy();
-//                wait(1000);
-//
-//                driveToPlaceCone();
-//                wait(1000);
-//
-//                goBackToHome();
-//                wait(1000);
-//
-//                driveToParking();
-                telemetry.addLine("Tag Parking Zone: " + parkingZone);
+            robot.getWebcamSubsystem().startStreaming();
+            while (!tagFound && !isStopRequested()) {
+                detectTag();
+                telemetry.addLine("Tag Not Detected");
                 telemetry.update();
             }
-            else {
-                robot.getDrivebaseSubsystem().drive(DrivebaseSubsystem.DistanceUnits.INCHES, 28);
-            }
+            telemetry.addLine("Tag Detected");
+            telemetry.update();
+
+            robot.autoDeploy();
+            robot.autoDriveToPlaceCone("right");
+            robot.autoDriveToParking(parkingZone, "right");
         }
     }
 

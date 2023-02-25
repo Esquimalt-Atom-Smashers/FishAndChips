@@ -19,6 +19,7 @@ public class LinkageSubsystem extends CustomSubsystemBase {
 
     /** The current position of the linkage */
     private Position currentPosition;
+    private int limitPosition = 115;
 
     /** An array of all possible positions for the linkage to be */
     private Position[] positions = {Position.HOME, Position.SMALL_POLE, Position.MEDIUM_POLE, Position.TALL_POLE};
@@ -36,7 +37,7 @@ public class LinkageSubsystem extends CustomSubsystemBase {
     public enum Position {
         HOME(0),
         SMALL_POLE(55),
-        MEDIUM_POLE(90),
+        MEDIUM_POLE(98),
         TALL_POLE(110);
 
         private int deg;
@@ -140,8 +141,13 @@ public class LinkageSubsystem extends CustomSubsystemBase {
     public int getLinkage() {
         return linkage.getCurrentPosition();
     }
-    public Position getCurrentPosition() {
-        return currentPosition;
+
+    public int getLimitPosition() {
+        return limitPosition;
+    }
+
+    public void setLimitPosition(int limitPosition) {
+        this.limitPosition = limitPosition;
     }
 
 }

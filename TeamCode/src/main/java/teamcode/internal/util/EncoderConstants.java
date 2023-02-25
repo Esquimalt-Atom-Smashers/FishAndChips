@@ -19,7 +19,7 @@ public class EncoderConstants {
 
         public static final double PULSES_PER_INCH =
                 (PULSES_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * Math.PI);
-        public static final double PULSES_PER_TILE = (PULSES_PER_INCH * 24);
+        public static final double PULSES_PER_TILE = (PULSES_PER_INCH * 25);
     }
 
     public static class Gobilda60RPM {

@@ -11,9 +11,12 @@ import teamcode.internal.Robot;
 public class MainOpMode extends LinearOpMode {
     private Robot robot;
 
+
     @Override
     public void runOpMode() throws InterruptedException {
-        robot = new Robot(this);
+        robot = new Robot(this, 0, 0);
+
+        robot.getClawSubsystem().getClaw().turnToAngle(130);
 
         waitForStart();
         while (opModeIsActive() && !isStopRequested()) {

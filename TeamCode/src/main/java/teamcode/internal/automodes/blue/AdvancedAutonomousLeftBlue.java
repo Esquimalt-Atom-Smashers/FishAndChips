@@ -12,7 +12,7 @@ import teamcode.internal.Robot;
 import teamcode.internal.subsystems.DrivebaseSubsystem;
 import teamcode.internal.util.AprilTagConstants;
 
-@Autonomous(name="Main Autonomous Mode")
+@Autonomous(name="Main Autonomous Mode(left)")
 public class AdvancedAutonomousLeftBlue extends LinearOpMode {
     private Robot robot;
 
@@ -21,7 +21,7 @@ public class AdvancedAutonomousLeftBlue extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        robot = new Robot(this);
+        robot = new Robot(this, 0, 0);
 
         robot.initWebcamSubsystem();
 
@@ -33,12 +33,10 @@ public class AdvancedAutonomousLeftBlue extends LinearOpMode {
                 telemetry.addLine("Tag Not Detected");
                 telemetry.update();
             }
-            telemetry.addLine("Tag Detected");
-            telemetry.update();
-            deploy();
-            driveToPlaceCone();
-            wait(1000);
-            driveToParking();
+
+            robot.autoDeploy();
+            robot.autoDriveToPlaceCone("left");
+            robot.autoDriveToParking(parkingZone, "left");
         }
     }
 
@@ -61,47 +59,5 @@ public class AdvancedAutonomousLeftBlue extends LinearOpMode {
                 }
             }
         }
-    }
-
-    private void driveToPlaceCone() {
-        robot.getDrivebaseSubsystem().strafe(DrivebaseSubsystem.DistanceUnits.INCHES, 28);
-        wait(500);
-
-        robot.getDrivebaseSubsystem().drive(DrivebaseSubsystem.DistanceUnits.INCHES, 28);
-        wait(500);
-
-        robot.getDrivebaseSubsystem().strafe(DrivebaseSubsystem.DistanceUnits.INCHES, -13);
-        wait(500);
-
-        robot.getClawSubsystem().openClaw();
-    }
-
-    private void deploy() {
-        robot.getClawSubsystem().openClaw();
-        robot.getClawSubsystem().closeClaw();
-        wait(1000);
-        robot.getLinkageSubsystem().nextPos();
-        wait(500);
-        robot.getLinkageSubsystem().nextPos();
-        wait(1000);
-    }
-
-    private void driveToParking() {
-        switch (parkingZone) {
-            case 1:
-                robot.getDrivebaseSubsystem().strafe(DrivebaseSubsystem.DistanceUnits.INCHES, -42);
-                break;
-            case 2:
-                robot.getDrivebaseSubsystem().strafe(DrivebaseSubsystem.DistanceUnits.INCHES, -14);
-                break;
-            case 3:
-                robot.getDrivebaseSubsystem().strafe(DrivebaseSubsystem.DistanceUnits.INCHES, 14);
-                break;
-        }
-    }
-
-    private void wait(int milliseconds) {
-        ElapsedTime time = new ElapsedTime();
-        while (time.milliseconds() < milliseconds);
     }
 }

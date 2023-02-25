@@ -27,8 +27,6 @@ import teamcode.internal.util.EncoderConstants;
  * @author Esquimalt Atom Smashers
  */
 
-
-
 public class DrivebaseSubsystem extends CustomSubsystemBase {
     /** Motors which control the drivebase */
     private final DcMotor frontLeft;
@@ -39,17 +37,20 @@ public class DrivebaseSubsystem extends CustomSubsystemBase {
     /** An array of the drivebase motors on the robot */
     private final DcMotor[] motors;
 
+    private BNO055IMU imu;
+
     /** Speeds in which the robot strafes and drives */
     private final double AUTO_STRAFE_SPEED = 0.3;
     private final double AUTO_DRIVE_SPEED = 0.3;
     private final double TURN_SPEED = 0.4;
 
-    private BNO055IMU imu;
-
-    private Orientation lastAngles = new Orientation();
-    private double currentAngle = 0.0;
+    private boolean scaled = false;
 
 
+
+    public BNO055IMU getGyro() {
+        return imu;
+    }
     /**
      * The sole constructor of DrivebaseSubsystem. Initializes the 4 drivebase motors
      * and the built-in gyro. The drivebase motors are set to their corresponding directions and
@@ -86,20 +87,20 @@ public class DrivebaseSubsystem extends CustomSubsystemBase {
     /**
      * Drives the robot given the 3 joystick positions. The drivebase uses mecanum wheels allowing for 8 directional travel.
      *
-     * @param strafe how far the robot will strafe left or right
+     * @param strafe how far the robot will strafe left or right2
      * @param forward how far the robot will drive forward or backwards
      * @param turn how much the robot will turn clockwise or counterclockwise
      */
-    public void drive(double forward, double strafe, double turn) {
-        double gyroRadians = -imu.getAngularOrientation().firstAngle;
+    public void drive(double forward, double strafe, double turn, boolean fieldCentric) {
+        double gyroRadians = Math.toRadians(-imu.getAngularOrientation().firstAngle);
 
-        double rotateX = strafe * Math.cos(gyroRadians) - forward * Math.sin(gyroRadians);
-        double rotateY = strafe * Math.sin(gyroRadians) + forward * Math.cos(gyroRadians);
+        double rotateX = fieldCentric ? strafe * Math.cos(gyroRadians) - forward * Math.sin(gyroRadians) : strafe;
+        double rotateY = fieldCentric ? strafe * Math.sin(gyroRadians) + forward * Math.cos(gyroRadians) : forward;
 
-        frontLeft.setPower(Range.clip(rotateY + rotateX + turn, -1, 1));
-        frontRight.setPower(Range.clip(rotateY - rotateX - turn, -1, 1));
-        rearLeft.setPower(Range.clip(rotateY - rotateX + turn, -1, 1));
-        rearRight.setPower(Range.clip(rotateY + rotateX - turn, -1, 1));
+        frontLeft.setPower(Range.clip(rotateY + rotateX + turn, -1, 1) * .80);
+        frontRight.setPower(Range.clip(rotateY - rotateX - turn, -1, 1) * .80);
+        rearLeft.setPower(Range.clip(rotateY - rotateX + turn, -1, 1) * .80);
+        rearRight.setPower(Range.clip(rotateY + rotateX - turn, -1, 1) * .80);
     }
 
     /**
@@ -111,15 +112,23 @@ public class DrivebaseSubsystem extends CustomSubsystemBase {
     public void drive(DistanceUnits unit, double distance) {
         Arrays.stream(motors)
                 .forEach(motor -> motor.setTargetPosition(motor.getCurrentPosition()
-                        + (int)(unit.toUnit(distance))));
+                        + (int)(unit.toPulses(distance))));
 
         setMotorMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         driveToPosition(AUTO_DRIVE_SPEED, 0, 0);
+//        frontLeft.setPower(.5);
+//        frontRight.setPower(.5);
+//        rearLeft.setPower(.5);
+//        rearRight.setPower(.5);
+//        while (frontLeft.isBusy() || frontLeft.isBusy() || rearLeft.isBusy() || rearRight.isBusy()) {
+//
+//        }
         stopMotors();
 
         setMotorMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
+
 
     /**
      * Strafes the robot left or right given the entered distance.
@@ -128,7 +137,7 @@ public class DrivebaseSubsystem extends CustomSubsystemBase {
      * @param distance the distance the robot will strafe
      */
     public void strafe(DistanceUnits unit, int distance) {
-        int target = (int) unit.toUnit(distance);
+        int target = (int) unit.toPulses(distance);
 
         frontLeft.setTargetPosition(frontLeft.getCurrentPosition() + target);
         frontRight.setTargetPosition(frontRight.getCurrentPosition() - target);
@@ -144,8 +153,9 @@ public class DrivebaseSubsystem extends CustomSubsystemBase {
     }
 
     public void driveToPosition(double forward, double strafe, double turn) {
+        drive(forward, strafe, turn, false);
         while (frontLeft.isBusy() && frontRight.isBusy() && rearLeft.isBusy() && rearRight.isBusy()) {
-            drive(forward, strafe, turn);
+
         }
     }
 
@@ -159,11 +169,15 @@ public class DrivebaseSubsystem extends CustomSubsystemBase {
                 .forEach(motor -> motor.setMode(runMode));
     }
 
+    public void setScaled(boolean scaled) {
+        this.scaled = scaled;
+    }
+
     public void initImu() {
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.mode = BNO055IMU.SensorMode.IMU;
-        parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
+        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
         parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
         imu.initialize(parameters);
     }
@@ -180,7 +194,7 @@ public class DrivebaseSubsystem extends CustomSubsystemBase {
             this.conversionFactor = conversionFactor;
         }
 
-        public double toUnit(double value) {
+        public double toPulses(double value) {
             return value * conversionFactor;
         }
     }

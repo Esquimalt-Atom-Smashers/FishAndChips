@@ -26,10 +26,14 @@ public class ClawSubsystem extends CustomSubsystemBase {
     }
 
     public void openClaw() {
-        claw.turnToAngle(50);
+        claw.turnToAngle(120);
     }
 
     public void closeClaw() {
-        claw.turnToAngle(90);
+        claw.turnToAngle(3);
+    }
+
+    public ServoEx getClaw() {
+        return claw;
     }
 }
